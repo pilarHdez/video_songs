@@ -3,15 +3,19 @@
 */
 package org.todito.music;
 import java.math.BigInteger;
-public class Video{
+public class Video implements Comparable<Video>{
     private String videoId;
     private BigInteger currentLikes;
-    private String genre;
     
-    public Video(String videoId, BigInteger currentLikes, String genre){
+    public Video(String videoId, BigInteger currentLikes){
         this.videoId = videoId; 
         this.currentLikes = currentLikes; 
-        this.genre = genre;
+    }
+
+    @Override
+    public int compareTo(Video v) {
+        // to get an ascending queue 
+        return this.currentLikes.compareTo(v.currentLikes) * -1;
     }
 
     public String getVideoId(){
@@ -30,11 +34,4 @@ public class Video{
         this.currentLikes = currentLikes;
     }
     
-    public String getGenre(){
-        return this.genre;
-    }
-    
-    public void setGenre(String genre){
-        this.genre = genre;
-    }
 }
