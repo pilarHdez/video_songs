@@ -1,10 +1,11 @@
 package org.todito.music; 
+import java.util.*; 
 import java.math.BigInteger; 
 
 public class LikeTrackingServiceImpl implements LikeTrackingService{
 
-    // Tree with all the songs
-    private TreeMap<String, BigInteger> songs; 
+    // Queue with all the songs
+    private PriorityQueue<Video> songs; 
     // Map to count the total of genre visited
     private HashMap<String, BigInteger> genreCount;
     
@@ -12,7 +13,7 @@ public class LikeTrackingServiceImpl implements LikeTrackingService{
     private static final int LIMIT_TOP = 10;
 
     // Dependency injection to the service
-    public LikeTrackingServiceImpl(TreeMap<String, BigInteger> songs, HashMap<String, BigInteger> genreCount){
+    public LikeTrackingServiceImpl(PriorityQueue<Video> songs, HashMap<String, BigInteger> genreCount){
         this.songs = songs; 
         this.genreCount = genreCount;
     }
@@ -24,9 +25,9 @@ public class LikeTrackingServiceImpl implements LikeTrackingService{
     * @param genre genre of the video
     */
     synchronized void recordLikes(String videoId, BigInteger currentLikes, String genre){
-        // O(NlogN) where N is the element in the Tree
+        // O(logN) where N is the element in the Queue
         // Add song with the current likes
-        this.songs.put(videoId, currentLikes);
+        this.songs.add(new Video(videoId, currentLikes));
         
         // O(1) update counter for the genre
         // Add 1 to the counter for genre
@@ -37,8 +38,16 @@ public class LikeTrackingServiceImpl implements LikeTrackingService{
      * @return list top 10 videos with most likes
     */
     synchronized List<String> getTopLiked(){
-        // O(N) where N is the number of elements in the Tree
-        return this.songs.keySet().stream().limit(LIMIT_TOP).collect(Collectors.toCollection(ArrayList::new));
+        
+        List<String> topSongs = new ArrayList<String>;
+
+        // O(1O log N) where N is the elements in the Queue
+        Iterator itr = this.songs.iterator();
+        for(int i= 0; i<LIMIT_TOP; i++){
+            topSongs.add(itr.next().getVideoId());
+        }
+
+        return topSongs;
     }
     
     
